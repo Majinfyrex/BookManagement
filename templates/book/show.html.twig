@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Book{% endblock %}
+
+{% block body %}
+    <h1>Détail du livre</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ book.id }}</td>
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td>{{ book.title }}</td>
+            </tr>
+            <tr>
+                <th>Genre</th>
+                <td>{{ book.genre }}</td>
+            </tr>
+            <tr>
+                <th>Publié le</th>
+                <td>{{ book.publishedAt ? book.publishedAt|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Statut</th>
+                <td>
+                    {% if book.isAvailable() %}
+                        <span class="text-success">Disponible</span>
+                    {% else %}
+                        <span class="text-danger">Non disponible</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% if book.isAvailable() %}
+        <form action="{{ path('app_borrow_new', { book_id: book.id }) }}" method="get">
+            <button class="btn btn-primary">Emprunter</button>
+        </form>
+    {% endif %}
+
+    <a href="{{ path('app_book_index') }}">retour à la liste</a>
+    {% if is_granted("ROLE_ADMIN") %}
+        <a href="{{ path('app_book_edit', { id: book.id }) }}">Modifier</a>
+        {{ include('book/_delete_form.html.twig') }}
+    {% endif %}
+{% endblock %}

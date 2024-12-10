@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Book index{% endblock %}
+
+{% block body %}
+    <h1>Book index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Auteur</th>
+                <th>Genre</th>
+                <th>Publié le</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for book in books %}
+            <tr>
+                <td>{{ book.id }}</td>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author }}</td>
+                <td>{{ book.genre }}</td>
+                <td>{{ book.publishedAt ? book.publishedAt|date('Y-m-d') : '' }}</td>
+                {% if book.isAvailable() %}
+                    <td>
+                        <form action="{{ path('app_borrow_new', { book_id: book.id }) }}" method="get">
+                            <button class="btn btn-primary">Emprunter</button>
+                        </form>
+                    </td>
+                {% else %}
+                    <td>
+                        {% for borrow in book.borrowed %}
+                            {% if borrow.user.id == app.user.id %}
+                                <form action="{{ path('app_book_return', { id: book.id }) }}" method="get">
+                                    <button class="btn btn-primary">Retourner</button>
+                                </form>
+                            {% else %}
+                                <span class="text-danger">Non disponible</span>
+                            {% endif %}
+                        {% endfor %}
+                {% endif %}
+
+                {% if is_granted("ROLE_ADMIN") %}
+                <td>
+                    <a href="{{ path('app_book_show', {'id': book.id}) }}">voir</a>
+                    <a href="{{ path('app_book_edit', {'id': book.id}) }}">modifier</a>
+                </td>
+                {% endif %}
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Aucun livre trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_granted("ROLE_ADMIN") %}
+        <a href="{{ path('app_book_new') }}">Ajouter un nouveau livre</a>
+    {% endif %}
+{% endblock %}

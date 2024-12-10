@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Borrow index{% endblock %}
+
+{% block body %}
+    <h1>Liste des emprunts</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Email</th>
+                <th>Date d'emprunt</th>
+                <th>Status</th>
+                {% if is_granted('ROLE_ADMIN') %}
+                <th>actions</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+        {% for borrow in borrows %}
+            <tr>
+                <td>{{ borrow.id }}</td>
+                <td>{{ borrow.book.title }}</td>
+                <td>{{ borrow.user.email }}</td>
+                <td>{{ borrow.borrowDate ? borrow.borrowDate|date('Y-m-d') : '' }}</td>
+                <td> Emprunté </td>
+                <td>
+                    {% if is_granted("ROLE_ADMIN") %}
+                    <a href="{{ path('app_borrow_show', {'id': borrow.id}) }}">voir</a>
+                    <a href="{{ path('app_borrow_edit', {'id': borrow.id}) }}">modifier</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">Aucun emprunt trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% if is_granted('ROLE_ADMIN') %}
+    <a href="{{ path('app_borrow_new') }}">Faire un emprunt</a>
+    {% endif %}
+{% endblock %}

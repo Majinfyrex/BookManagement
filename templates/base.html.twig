@@ -12,6 +12,11 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        {% if app.request.attributes.get('_route') not in ['app_home', 'app_login', 'app_register'] %}
+            {% include "layout/nav.html.twig" %}
+        {% endif %}
+        <div>
+            {% block body %}{% endblock %}
+        </div>
     </body>
 </html>
